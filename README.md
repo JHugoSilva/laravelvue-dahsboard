@@ -7,3 +7,5 @@
 ### npm i @vitejs/plugin-vue
 # Vue Router
 ### npm i vue-router
+# Vue Router
+### npm i jquery
