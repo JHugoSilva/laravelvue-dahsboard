@@ -1,12 +1,14 @@
 <script setup>
 import { onMounted, reactive, ref } from "vue";
+import { Form, Field } from 'vee-validate'
+import * as yup from 'yup'
 
 const users = ref([]);
 
-const form = reactive({
-    name: '',
-    email: '',
-    password: ''
+const schema = yup.object({
+  name: yup.string().required(),
+  email: yup.string().email().required(),
+  password: yup.string().required().min(8)
 })
 
 const getUser = () => {
@@ -15,14 +17,12 @@ const getUser = () => {
   });
 };
 
-const createUser = () => {
-  axios.post('/api/users', form).then((response) => {
-    users.value.unshift(response.data)
-    form.name = ''
-    form.email = ''
-    form.password = ''
-    $('#createUserModal').modal('hide')
-  })
+const createUser = (values, { resetForm }) => {
+    axios.post('/api/users', values).then((response) => {
+      users.value.unshift(response.data)
+      $('#createUserModal').modal('hide')
+      resetForm()
+    })
 }
 
 onMounted(() => {
@@ -111,53 +111,64 @@ onMounted(() => {
             </button>
           </div>
           <div class="modal-body">
-            <form autocomplete="off">
+            <Form @submit="createUser" :validation-schema="schema" v-slot="{ errors }">
               <div class="form-group">
                 <label for="name">Name</label>
-                <input
+                <Field
                   type="text"
-                  v-model="form.name"
+                  name="name"
+                  :class="{'is-invalid':errors.name}"
                   class="form-control"
                   id="name"
                   aria-describedby="nameHelp"
                   placeholder="Enter full name"
                 />
+                <span class="error-valid">{{ errors.name }}</span>
               </div>
 
               <div class="form-group">
                 <label for="email">Email</label>
-                <input
+                <Field
                   type="email"
-                  v-model="form.email"
+                  name="email"
+                  :class="{'is-invalid':errors.email}"
                   class="form-control"
                   id="email"
                   aria-describedby="nameHelp"
                   placeholder="Enter full name"
                 />
+                <span class="error-valid">{{ errors.email }}</span>
               </div>
-            </form>
 
-            <div class="form-group">
-              <label for="email">Password</label>
-              <input
-                type="password"
-                v-model="form.password"
-                class="form-control"
-                id="password"
-                aria-describedby="nameHelp"
-                placeholder="Enter password"
-              />
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Cancel
-            </button>
-            <button type="button" @click="createUser" class="btn btn-primary">Save</button>
+              <div class="form-group">
+                <label for="email">Password</label>
+                <Field
+                  type="password"
+                  name="password"
+                  :class="{'is-invalid':errors.password}"
+                  class="form-control"
+                  id="password"
+                  aria-describedby="nameHelp"
+                  placeholder="Enter password"
+                />
+                <span class="error-valid">{{ errors.password }}</span>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                >
+                  Save
+                </button>
+              </div>
+            </Form>
           </div>
         </div>
       </div>
@@ -165,3 +176,8 @@ onMounted(() => {
   </div>
   <!-- /.content -->
 </template>
+<style>
+.error-valid {
+  color:#DC3545;
+}
+</style>

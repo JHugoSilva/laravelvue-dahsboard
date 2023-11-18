@@ -9,3 +9,7 @@
 ### npm i vue-router
 # Vue Router
 ### npm i jquery
+# Vee Validate
+### npm i vee-validate --save
+# Yup
+### npm i yup
