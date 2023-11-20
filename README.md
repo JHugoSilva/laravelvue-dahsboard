@@ -13,3 +13,5 @@
 ### npm i vee-validate --save
 # Yup
 ### npm i yup
+# Moment
+### npm i moment

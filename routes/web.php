@@ -18,5 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/api/users', [UserController::class, 'index']);
 Route::post('/api/users', [UserController::class, 'store']);
+Route::put('/api/users/{id}', [UserController::class, 'update']);
+Route::delete('/api/users/{id}', [UserController::class, 'destroy']);
 
 Route::get('{view}', ApplicationController::class)->where('view', '(.*)');
